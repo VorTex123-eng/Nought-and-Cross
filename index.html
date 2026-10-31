@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nought &amp; Cross — Liquid Glass</title>
+<meta name="description" content="A premium, minimal Tic-Tac-Toe experience with local multiplayer, an unbeatable AI, and tournament mode.">
+
+<!-- Font Awesome (icons only) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Ambient liquid-glass background -->
+<div class="aurora" aria-hidden="true">
+  <span class="aurora-blob blob-a"></span>
+  <span class="aurora-blob blob-b"></span>
+  <span class="aurora-blob blob-c"></span>
+  <div class="grain"></div>
+</div>
+
+<div class="app" id="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"><i class="fa-solid fa-xmark"></i><i class="fa-regular fa-circle"></i></span>
+      <span class="brand-name">Nought &amp; Cross</span>
+    </div>
+    <button class="icon-btn" id="btn-home" title="Return to menu" aria-label="Return to menu">
+      <i class="fa-solid fa-house"></i>
+    </button>
+  </header>
+
+  <main class="stage" id="stage">
+
+    <!-- ============ SCREEN: HOME / MODE SELECT ============ -->
+    <section class="screen active" id="screen-home" data-screen="home">
+      <div class="screen-head">
+        <h1>Choose your match</h1>
+        <p>Three ways to play. All of them beautiful.</p>
+      </div>
+
+      <div class="mode-grid">
+        <button class="glass-card mode-card" data-mode="local">
+          <div class="mode-icon"><i class="fa-solid fa-users"></i></div>
+          <h2>Local Multiplayer</h2>
+          <p>Pass the device. Two players, one board.</p>
+          <span class="mode-cta">Play <i class="fa-solid fa-arrow-right"></i></span>
+        </button>
+
+        <button class="glass-card mode-card" data-mode="ai">
+          <div class="mode-icon"><i class="fa-solid fa-microchip"></i></div>
+          <h2>Play the AI</h2>
+          <p>Minimax with alpha-beta pruning. Choose your challenge.</p>
+          <span class="mode-cta">Play <i class="fa-solid fa-arrow-right"></i></span>
+        </button>
+
+        <button class="glass-card mode-card" data-mode="tournament">
+          <div class="mode-icon"><i class="fa-solid fa-trophy"></i></div>
+          <h2>Tournament</h2>
+          <p>Best of many. Points decide the champion.</p>
+          <span class="mode-cta">Play <i class="fa-solid fa-arrow-right"></i></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN: AI SETUP ============ -->
+    <section class="screen" id="screen-ai-setup" data-screen="ai-setup">
+      <div class="screen-head">
+        <button class="back-link" data-back="home"><i class="fa-solid fa-chevron-left"></i> Menu</button>
+        <h1>Set the difficulty</h1>
+        <p>Higher tiers see further ahead.</p>
+      </div>
+
+      <div class="diff-grid">
+        <button class="glass-card diff-card" data-diff="easy">
+          <div class="diff-bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></div>
+          <h3>Easy</h3>
+          <p>Mostly random moves. Forgiving and loose.</p>
+        </button>
+        <button class="glass-card diff-card" data-diff="medium">
+          <div class="diff-bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></div>
+          <h3>Medium</h3>
+          <p>Reasoned play with the occasional slip.</p>
+        </button>
+        <button class="glass-card diff-card" data-diff="unbeatable">
+          <div class="diff-bars"><span class="bar on"></span><span class="bar on"></span><span class="bar on"></span></div>
+          <h3>Grandmaster</h3>
+          <p>Full-depth search. Flawless. Unbeatable.</p>
+        </button>
+      </div>
+
+      <div class="screen-head" style="margin-top: 2.2rem;">
+        <p class="subtle-label">Who opens the game?</p>
+      </div>
+      <div class="starter-row">
+        <button class="pill-toggle active" data-starter="player">You go first</button>
+        <button class="pill-toggle" data-starter="ai">AI goes first</button>
+      </div>
+
+      <button class="btn-primary" id="btn-start-ai" disabled>
+        <span>Start match</span><i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </section>
+
+    <!-- ============ SCREEN: TOURNAMENT SETUP ============ -->
+    <section class="screen" id="screen-tourney-setup" data-screen="tourney-setup">
+      <div class="screen-head">
+        <button class="back-link" data-back="home"><i class="fa-solid fa-chevron-left"></i> Menu</button>
+        <h1>Tournament setup</h1>
+        <p>Name your players and set the length of the series.</p>
+      </div>
+
+      <div class="setup-form glass-card">
+        <p class="subtle-label">Opponent</p>
+        <div class="starter-row" id="tourney-opponent-row">
+          <button class="pill-toggle active" data-opponent="human">Human</button>
+          <button class="pill-toggle" data-opponent="ai">AI</button>
+        </div>
+
+        <div class="diff-grid" id="tourney-diff-grid" hidden>
+          <button class="glass-card diff-card" data-tdiff="easy">
+            <div class="diff-bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></div>
+            <h3>Easy</h3>
+            <p>Mostly random moves. Forgiving and loose.</p>
+          </button>
+          <button class="glass-card diff-card" data-tdiff="medium">
+            <div class="diff-bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></div>
+            <h3>Medium</h3>
+            <p>Reasoned play with the occasional slip.</p>
+          </button>
+          <button class="glass-card diff-card" data-tdiff="unbeatable">
+            <div class="diff-bars"><span class="bar on"></span><span class="bar on"></span><span class="bar on"></span></div>
+            <h3>Grandmaster</h3>
+            <p>Full-depth search. Flawless. Unbeatable.</p>
+          </button>
+        </div>
+
+        <label class="field">
+          <span>Player One <i class="fa-solid fa-xmark field-token"></i></span>
+          <input type="text" id="input-p1" maxlength="14" placeholder="Player One" value="Player One">
+        </label>
+        <label class="field" id="field-p2">
+          <span>Player Two <i class="fa-regular fa-circle field-token"></i></span>
+          <input type="text" id="input-p2" maxlength="14" placeholder="Player Two" value="Player Two">
+        </label>
+
+        <p class="subtle-label">Rounds</p>
+        <div class="rounds-row" id="rounds-row">
+          <button class="pill-toggle" data-rounds="3">3</button>
+          <button class="pill-toggle active" data-rounds="5">5</button>
+          <button class="pill-toggle" data-rounds="10">10</button>
+          <button class="pill-toggle" data-rounds="20">20</button>
+        </div>
+
+        <div class="scoring-note">
+          <span><strong>Win</strong> 3 pts</span>
+          <span><strong>Draw</strong> 1 pt each</span>
+          <span><strong>Loss</strong> 0 pts</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-start-tourney">
+        <span>Begin tournament</span><i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </section>
+
+    <!-- ============ SCREEN: GAME ============ -->
+    <section class="screen" id="screen-game" data-screen="game">
+
+      <!-- Tournament progress strip (hidden outside tournament mode) -->
+      <div class="tourney-strip" id="tourney-strip" hidden>
+        <div class="tourney-strip-top">
+          <span id="tourney-round-label">Round 1 of 5</span>
+          <span id="tourney-leader-label">—</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="tourney-progress"></div></div>
+      </div>
+
+      <div class="player-row">
+        <div class="glass-card player-card active" id="card-x">
+          <div class="player-token token-x"><i class="fa-solid fa-xmark"></i></div>
+          <div class="player-meta">
+            <span class="player-name" id="name-x">Player One</span>
+            <span class="player-score" id="score-x">0 pts</span>
+          </div>
+        </div>
+
+        <div class="vs-status" id="turn-indicator">
+          <span id="status-text">Your turn</span>
+        </div>
+
+        <div class="glass-card player-card" id="card-o">
+          <div class="player-token token-o"><i class="fa-regular fa-circle"></i></div>
+          <div class="player-meta">
+            <span class="player-name" id="name-o">Player Two</span>
+            <span class="player-score" id="score-o">0 pts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div class="board glass-card" id="board" role="grid" aria-label="Tic Tac Toe board">
+          <button class="cell" role="gridcell" data-index="0" aria-label="Row 1 Column 1"></button>
+          <button class="cell" role="gridcell" data-index="1" aria-label="Row 1 Column 2"></button>
+          <button class="cell" role="gridcell" data-index="2" aria-label="Row 1 Column 3"></button>
+          <button class="cell" role="gridcell" data-index="3" aria-label="Row 2 Column 1"></button>
+          <button class="cell" role="gridcell" data-index="4" aria-label="Row 2 Column 2"></button>
+          <button class="cell" role="gridcell" data-index="5" aria-label="Row 2 Column 3"></button>
+          <button class="cell" role="gridcell" data-index="6" aria-label="Row 3 Column 1"></button>
+          <button class="cell" role="gridcell" data-index="7" aria-label="Row 3 Column 2"></button>
+          <button class="cell" role="gridcell" data-index="8" aria-label="Row 3 Column 3"></button>
+          <svg class="win-line" id="win-line" viewBox="0 0 300 300" aria-hidden="true">
+            <line id="win-line-el" x1="0" y1="0" x2="0" y2="0" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="game-actions">
+        <button class="btn-ghost" id="btn-restart"><i class="fa-solid fa-rotate-right"></i> Restart round</button>
+        <button class="btn-ghost" id="btn-quit"><i class="fa-solid fa-xmark"></i> Quit to menu</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ RESULT MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal glass-card" id="modal">
+    <div class="modal-icon" id="modal-icon"><i class="fa-solid fa-trophy"></i></div>
+    <h2 id="modal-title">Round result</h2>
+    <p id="modal-subtitle">Details go here.</p>
+
+    <div class="modal-leaderboard" id="modal-leaderboard" hidden></div>
+
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
